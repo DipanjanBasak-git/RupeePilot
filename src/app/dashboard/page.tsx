@@ -7,6 +7,7 @@ import { CATEGORIES, CATEGORY_LABELS, type Category } from "@/lib/categories";
 import { calculateBudgetSummary } from "@/lib/budget";
 import { saveBudgetAction, addTransactionAction, deleteTransactionAction, signOutAction } from "@/app/actions";
 import { AllocationEditor } from "@/components/allocation-editor";
+import { BudgetChartsSection } from "@/components/budget-charts-section";
 import type { Allocation, Transaction } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -47,7 +48,10 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const transactions = (transactionsData ?? []) as Transaction[];
   const incomePaise = Number(budget?.income_paise ?? 0);
   const summary = calculateBudgetSummary(incomePaise, allocations, transactions);
-  const allocationMap = new Map(allocations.map((item) => [item.category, item]));
+  const categoryAllocations: Partial<Record<Category, number>> = {};
+  for (const item of allocations) {
+    categoryAllocations[item.category as Category] = Number(item.planned_paise);
+  }
   const categorySpent = new Map<Category, number>();
   for (const transaction of transactions) {
     if (transaction.kind === "expense") {
@@ -135,6 +139,16 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
             </form>
           </section>
         </div>
+
+        {/* Budget Allocation & Spending Interactive Charts */}
+        <BudgetChartsSection
+          incomePaise={incomePaise}
+          plannedPaise={summary.plannedPaise}
+          expensesPaise={summary.expensesPaise}
+          unallocatedPaise={summary.unallocatedPaise}
+          categoryAllocations={categoryAllocations}
+          categorySpent={Object.fromEntries(categorySpent)}
+        />
 
         <section className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 p-5">
