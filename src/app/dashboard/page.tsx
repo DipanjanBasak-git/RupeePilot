@@ -101,7 +101,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
 
             <div className="mt-6 border-t border-slate-100 pt-5">
               <div className="flex items-center justify-between"><h3 className="font-semibold">Category allocations</h3><span className="text-xs text-slate-500">INR</span></div>
-              <AllocationEditor budgetId={budgetId ?? ""} incomePaise={incomePaise} existing={allocations} />
+              <AllocationEditor budgetId={budgetId ?? ""} incomePaise={incomePaise} existing={allocations} categorySpent={Object.fromEntries(categorySpent)} />
             </div>
           </section>
 

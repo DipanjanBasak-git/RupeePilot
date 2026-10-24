@@ -4,7 +4,7 @@ import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Wallet } from "lucide-react";
+import { Wallet, Eye, EyeOff } from "lucide-react";
 
 export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const [email, setEmail] = useState("");
@@ -13,6 +13,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -68,7 +69,17 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
             <input required type="email" autoComplete="email" className="mt-1.5 w-full rounded-xl border border-slate-300 px-3 py-3 outline-none focus:border-emerald-700" value={email} onChange={(e) => setEmail(e.target.value)} />
           </label>
           <label className="block text-sm font-medium">Password
-            <input required minLength={8} type="password" autoComplete={mode === "signup" ? "new-password" : "current-password"} className="mt-1.5 w-full rounded-xl border border-slate-300 px-3 py-3 outline-none focus:border-emerald-700" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <div className="relative mt-1.5">
+              <input required minLength={8} type={showPassword ? "text" : "password"} autoComplete={mode === "signup" ? "new-password" : "current-password"} className="w-full rounded-xl border border-slate-300 px-3 py-3 pr-11 outline-none focus:border-emerald-700" value={password} onChange={(e) => setPassword(e.target.value)} />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700 focus-visible:ring-offset-1 rounded"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
             {mode === "signup" && <span className="mt-1 block text-xs text-slate-500">Use at least 8 characters.</span>}
           </label>
           {error && <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>}
