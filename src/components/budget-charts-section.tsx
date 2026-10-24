@@ -1,19 +1,11 @@
 "use client";
 
-import { CATEGORIES, type Category } from "@/lib/categories";
+import { CATEGORIES, CATEGORY_COLORS, type Category } from "@/lib/categories";
 import { CategoryDonutChart } from "@/components/category-donut-chart";
 import { OverviewDonutChart, type OverviewCategoryItem } from "@/components/overview-donut-chart";
 import { PieChart as PieChartIcon } from "lucide-react";
 
-export const CATEGORY_COLORS: Record<Category, string> = {
-  home: "#059669",      // emerald-600
-  sip: "#0284c7",       // sky-600
-  savings: "#0d9488",   // teal-600
-  bills: "#6366f1",     // indigo-500
-  personal: "#f59e0b",  // amber-500
-  buffer: "#8b5cf6",    // purple-500
-  other: "#64748b",     // slate-500
-};
+export { CATEGORY_COLORS };
 
 interface BudgetChartsSectionProps {
   incomePaise: number;

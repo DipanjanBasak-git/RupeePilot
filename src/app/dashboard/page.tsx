@@ -8,11 +8,12 @@ import { calculateBudgetSummary } from "@/lib/budget";
 import { saveBudgetAction, addTransactionAction, deleteTransactionAction, signOutAction } from "@/app/actions";
 import { AllocationEditor } from "@/components/allocation-editor";
 import { BudgetChartsSection } from "@/components/budget-charts-section";
+import { RecentTransactionsSection } from "@/components/recent-transactions-section";
 import type { Allocation, Transaction } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
-export default async function DashboardPage({ searchParams }: { searchParams: Promise<{ month?: string }> }) {
+export default async function DashboardPage({ searchParams }: { searchParams: Promise<{ month?: string; category?: string }> }) {
   const params = await searchParams;
   const rawMonth = params.month ?? "";
   const month = /^\d{4}-\d{2}-01$/.test(rawMonth)
@@ -150,28 +151,11 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           categorySpent={Object.fromEntries(categorySpent)}
         />
 
-        <section className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white">
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 p-5">
-            <div><h2 className="text-lg font-bold">Recent transactions</h2><p className="mt-1 text-sm text-slate-500">Showing up to 100 records for this month.</p></div>
-            <Link href="/imports" className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold">Import transactions</Link>
-          </div>
-          {transactions.length === 0 ? <div className="p-10 text-center"><p className="font-semibold">No transactions yet</p><p className="mt-1 text-sm text-slate-500">Add your first transaction to see your spending here.</p></div> :
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[620px] text-left text-sm">
-                <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr><th className="px-5 py-3 font-semibold">Date</th><th className="px-5 py-3 font-semibold">Description</th><th className="px-5 py-3 font-semibold">Category</th><th className="px-5 py-3 text-right font-semibold">Amount</th><th className="px-5 py-3">Source</th><th className="px-5 py-3"></th></tr></thead>
-                <tbody className="divide-y divide-slate-100">
-                  {transactions.map((transaction) => <tr key={transaction.id}>
-                    <td className="whitespace-nowrap px-5 py-4 text-slate-500">{transaction.transaction_date}</td>
-                    <td className="px-5 py-4 font-medium">{transaction.description}</td>
-                    <td className="px-5 py-4 text-slate-600">{CATEGORY_LABELS[transaction.category] ?? transaction.category}</td>
-                    <td className={`whitespace-nowrap px-5 py-4 text-right font-semibold ${transaction.kind === "income" ? "text-emerald-800" : "text-slate-900"}`}>{transaction.kind === "income" ? "+" : "-"}{formatINR(transaction.amount_paise)}</td>
-                    <td className="px-5 py-4 text-slate-500">{transaction.source}</td>
-                    <td className="px-5 py-4"><form action={deleteTransactionAction}><input type="hidden" name="transactionId" value={transaction.id}/><button className="text-xs font-semibold text-rose-700 hover:underline">Delete</button></form></td>
-                  </tr>)}
-                </tbody>
-              </table>
-            </div>}
-        </section>
+        <RecentTransactionsSection
+          transactions={transactions}
+          deleteTransactionAction={deleteTransactionAction}
+          initialCategory={params.category}
+        />
 
         <section className="mt-6 grid gap-4 md:grid-cols-2">
           <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-5">
